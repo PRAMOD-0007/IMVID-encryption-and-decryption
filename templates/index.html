@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="CipherMedia is a secure media encryption and decryption workspace for image, video and audio files.">
+  <title>CipherMedia — Secure Media Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="CipherMedia home"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 20 7v10l-8 4.2L4 17V7l8-4.2Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span><span>Cipher<span class="brand-accent">Media</span></span></a>
+    <div class="topbar-right"><span class="local-badge"><span class="pulse"></span> LOCAL WORKSPACE</span><span class="top-divider"></span><span class="version-label">SECURE MEDIA TOOL <b>V1.0</b></span></div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro-grid">
+      <div class="intro-copy">
+        <div class="eyebrow"><span class="eyebrow-mark"></span> PRIVATE BY DESIGN <span class="eyebrow-line"></span></div>
+        <h1>Your media.<br><span>Your key. Your control.</span></h1>
+        <p class="intro-text">A focused workspace to protect personal images, videos and audio. Encrypt files before you store or share them, then restore them with your secret key.</p>
+        <div class="trust-row">
+          <div class="trust-item"><span class="trust-icon">⌘</span><span><b>AES-256-GCM</b><small>Authenticated encryption</small></span></div>
+          <div class="trust-item"><span class="trust-icon">⟡</span><span><b>Password-derived key</b><small>PBKDF2 · SHA-256</small></span></div>
+        </div>
+      </div>
+      <aside class="status-card" aria-label="Security configuration">
+        <div class="status-card-head"><span class="status-orb">✳</span><span class="status-label">ENCRYPTION STATUS</span><span class="status-indicator"><i></i> READY</span></div>
+        <div class="status-title">Your privacy layer</div>
+        <p class="status-description">Strong encryption protects file contents and checks that encrypted data has not been altered.</p>
+        <div class="status-rule"></div>
+        <div class="status-detail"><span>Algorithm</span><strong>AES-256-GCM</strong></div>
+        <div class="status-detail"><span>Key handling</span><strong>Not stored</strong></div>
+        <div class="status-detail"><span>Output format</span><strong>.cmenc</strong></div>
+        <div class="status-foot"><span class="tiny-shield">◆</span> Keep your password private and backed up.</div>
+      </aside>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="messages" role="alert">{% for category, message in messages %}<div class="message {{ category }}"><span class="message-symbol">!</span>{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+
+    <section class="workspace" aria-labelledby="workspace-title">
+      <div class="workspace-topline"><div><div class="section-label">THE WORKSPACE <span> / 01</span></div><h2 id="workspace-title">Protect a file</h2></div><div class="workspace-caption"><span class="caption-lock">▣</span> Your key never leaves this form intentionally</div></div>
+      <div class="workspace-layout">
+        <div class="operation-column">
+          <div class="tabs" role="tablist" aria-label="Choose file operation">
+            <button class="tab active" id="encrypt-tab" data-panel="encrypt-panel" role="tab" aria-controls="encrypt-panel" aria-selected="true"><span class="tab-icon">↗</span><span>Encrypt</span><small>Protect a new file</small></button>
+            <button class="tab" id="decrypt-tab" data-panel="decrypt-panel" role="tab" aria-controls="decrypt-panel" aria-selected="false"><span class="tab-icon">↙</span><span>Decrypt</span><small>Restore a protected file</small></button>
+          </div>
+
+          <div id="encrypt-panel" class="panel active-panel" role="tabpanel" aria-labelledby="encrypt-tab">
+            <form action="{{ url_for('encrypt_route') }}" method="post" enctype="multipart/form-data">
+              <div class="form-heading"><span class="step-chip">01</span><div><h3>Choose your media</h3><p>Start with an image, video or audio file.</p></div></div>
+              <label class="dropzone" for="encrypt-file" id="encrypt-dropzone">
+                <input id="encrypt-file" name="file" type="file" required accept="image/*,video/*,audio/*,.mkv,.flac,.cmenc">
+                <span class="upload-art"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M5 14.5v4A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-4"/></svg></span>
+                <strong id="encrypt-file-title">Drop a file to get started</strong><span class="drop-subtitle" id="encrypt-file-subtitle">or <em>browse your device</em></span>
+                <span class="file-type-list"><i>IMG</i><i>VIDEO</i><i>AUDIO</i><i>MAX 200 MB</i></span>
+              </label>
+              <div class="field"><div class="field-heading"><label for="encrypt-password">Create a secret key</label><span class="field-hint">MIN. 8 CHARACTERS</span></div><div class="password-wrap"><span class="input-lock">⌑</span><input id="encrypt-password" name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Enter a strong passphrase" required><button type="button" class="toggle-password" data-target="encrypt-password">Show</button></div><small class="field-help">A longer, unique passphrase is harder to guess. It cannot be recovered if lost.</small></div>
+              <button class="primary-button" type="submit"><span>Encrypt file</span><span class="button-arrow">↗</span></button>
+            </form>
+          </div>
+
+          <div id="decrypt-panel" class="panel" role="tabpanel" aria-labelledby="decrypt-tab" hidden>
+            <form action="{{ url_for('decrypt_route') }}" method="post" enctype="multipart/form-data">
+              <div class="form-heading"><span class="step-chip">01</span><div><h3>Restore your media</h3><p>Select a CipherMedia encrypted file.</p></div></div>
+              <label class="dropzone" for="decrypt-file" id="decrypt-dropzone">
+                <input id="decrypt-file" name="file" type="file" required accept=".cmenc,application/octet-stream">
+                <span class="upload-art upload-art-decrypt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5"/><path d="M5 14.5v4A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-4"/></svg></span>
+                <strong id="decrypt-file-title">Choose an encrypted file</strong><span class="drop-subtitle" id="decrypt-file-subtitle">or <em>browse your device</em></span>
+                <span class="file-type-list"><i>CMENC</i><i>AUTHENTICATED</i></span>
+              </label>
+              <div class="field"><div class="field-heading"><label for="decrypt-password">Enter your secret key</label><span class="field-hint">SAME KEY REQUIRED</span></div><div class="password-wrap"><span class="input-lock">⌑</span><input id="decrypt-password" name="password" type="password" autocomplete="current-password" placeholder="Enter the original passphrase" required><button type="button" class="toggle-password" data-target="decrypt-password">Show</button></div><small class="field-help">A wrong key or modified encrypted file will fail verification.</small></div>
+              <button class="primary-button decrypt-button" type="submit"><span>Decrypt file</span><span class="button-arrow">↙</span></button>
+            </form>
+          </div>
+        </div>
+
+        <aside class="workflow-aside"><div class="aside-overline">HOW IT WORKS</div><h3>Security in three steps.</h3><div class="workflow-step"><span class="workflow-number">01</span><span class="workflow-icon">▧</span><div><b>Select</b><p>Choose a supported media file from your device.</p></div></div><div class="workflow-step"><span class="workflow-number">02</span><span class="workflow-icon">⌘</span><div><b>Encrypt</b><p>Your password derives a key that protects the file.</p></div></div><div class="workflow-step"><span class="workflow-number">03</span><span class="workflow-icon">↓</span><div><b>Download</b><p>Save the encrypted file and keep your key separately.</p></div></div><div class="aside-warning"><span>!</span><p><b>Important</b><br>Never share your secret key with anyone. CipherMedia cannot reset a lost key.</p></div></aside>
+      </div>
+      <div class="workspace-bottom"><span><i class="bottom-dot"></i> READY FOR LOCAL TESTING</span><span>SUPPORTED MEDIA <b>IMAGE</b><b>VIDEO</b><b>AUDIO</b></span></div>
+    </section>
+
+    <footer class="footer"><a class="footer-brand" href="/">✳ CipherMedia</a><span>Academic mini project <i>·</i> Secure media processing</span><span class="footer-right">BUILT AROUND PRIVACY <span>◆</span></span></footer>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
